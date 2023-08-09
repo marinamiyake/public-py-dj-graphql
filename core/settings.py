@@ -25,6 +25,7 @@ env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, '.env'))
 # Django secret key
 SECRET_KEY = env('SECRET_KEY')
+WEATHER_API_KEY = env('WEATHER_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,6 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # ----- Additional Libraries -----
     'graphene_django',
+    # ----------
+    # ----- My Apps -----
+    'mainapp',
     # ----------
 ]
 
