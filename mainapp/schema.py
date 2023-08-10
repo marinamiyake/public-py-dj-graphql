@@ -1,4 +1,7 @@
 import graphene
+import requests
+from django.conf import settings
+from graphene_django import DjangoObjectType
 
 from mainapp import models
 
@@ -26,6 +29,20 @@ class MomentType(graphene.ObjectType):
 class MomentTypeConnection(graphene.relay.Connection):
     class Meta:
         node = MomentType
+
+
+class MomentDjangoType(DjangoObjectType):
+    class Meta:
+        model = models.Moment
+        # Require django-filter to use filter function
+        # filter_fields = ['name', 'ingredients']
+        interfaces = (graphene.relay.Node,)
+        fields = "__all__"
+
+
+class MomentDjangoTypeConnection(graphene.relay.Connection):
+    class Meta:
+        node = MomentDjangoType
 
 
 class Query(graphene.ObjectType):
@@ -66,3 +83,65 @@ class Query(graphene.ObjectType):
                 )
             )
         return results
+
+
+class MomentInput(graphene.InputObjectType):
+    city_name = graphene.String(required=False)
+    title = graphene.String(required=True)
+    comment = graphene.String(required=True)
+
+
+class CreateMoment(graphene.Mutation):
+    class Arguments:
+        input = MomentInput()
+
+    moment = graphene.Field(MomentDjangoType)
+
+    @classmethod
+    def mutate(cls, root, info, input):
+        moment = get_moment_from_weather_app_result(input.city_name)
+        moment.title = input.title
+        moment.comment = input.comment
+        moment.save()
+
+        return CreateMoment(moment=moment)
+
+
+class UpdateMoment(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+        input = MomentInput()
+
+    moment = graphene.Field(MomentDjangoType)
+
+    @classmethod
+    def mutate(cls, root, info, id, input):
+        moment = models.Moment.objects.get(pk=id)
+        moment.title = input.title
+        moment.comment = input.comment
+        moment.save()
+        return UpdateMoment(moment=moment)
+
+
+def get_moment_from_weather_app_result(city_name):
+    url = "https://api.openweathermap.org/data/2.5/weather?q={city_name}&units=metric&appid={API_key}"
+    weather_api_reponse = requests.get(url.format(city_name=city_name, API_key=settings.WEATHER_API_KEY))
+    weather_api_reponse_weather = weather_api_reponse.json()["weather"][0]
+    weather_api_reponse_main = weather_api_reponse.json()["main"]
+    new_moment = models.Moment(
+        title="",
+        city_name=city_name,
+        weather_description=weather_api_reponse_weather["description"],
+        temp=weather_api_reponse_main["temp"],
+        temp_min=weather_api_reponse_main["temp_min"],
+        temp_max=weather_api_reponse_main["temp_max"],
+        humidity=weather_api_reponse_main["humidity"],
+        comment="",
+    )
+    new_moment.save()
+    return new_moment
+
+
+class Mutation(graphene.ObjectType):
+    create_moment = CreateMoment.Field()
+    update_moment = UpdateMoment.Field()
