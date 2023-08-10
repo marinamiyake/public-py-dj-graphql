@@ -41,28 +41,12 @@ class MomentTypeConnection(graphene.relay.Connection):
 
 
 class Query(graphene.ObjectType):
-    moment = graphene.relay.Node.Field(MomentType)
     moments = graphene.relay.ConnectionField(MomentTypeConnection)
 
-    def resolve_moment(self, info, id):
-        record = models.Moment.objects.get(id=id)
-        return MomentType(
-            row_num=1,
-            title=record.title,
-            city_name=record.city_name,
-            weather_description=record.weather_description,
-            temp=record.temp,
-            temp_min=record.temp_min,
-            temp_max=record.temp_max,
-            humidity=record.humidity,
-            comment=record.comment,
-            created_at=record.created_at,
-        )
-
     def resolve_moments(self, info, **kwargs):
-        records = models.Moment.objects.all()
+        valid_records = models.Moment.objects.filter(del_flg=False)
         results = []
-        for i, record in enumerate(records):
+        for i, record in enumerate(valid_records):
             results.append(
                 MomentType(
                     row_num=i + 1,
