@@ -53,7 +53,7 @@ urlpatterns = [
     #               }
     #             }
     #           }
-    #       [Result example]
+    #       [Query Result example]
     #           {
     #             "data": {
     #               "moments": {
@@ -79,6 +79,68 @@ urlpatterns = [
     #                     }
     #                   }
     #                 ]
+    #               }
+    #             }
+    #           }
+    #       [Mutation(Create) example]
+    #           mutation {
+    #               createMoment(input:{
+    #                 cityName: "London"
+    #                 title: "test title 5 from graphiql"
+    #                 comment: "test comment 5 from graphiql"
+    #               }
+    #               ) {
+    #                   moment{
+    #                     id
+    #                     cityName
+    #                     title
+    #                     comment
+    #                     weatherDescription
+    #                   }
+    #               }
+    #           }
+    #       [Mutation(Create) Result example]
+    #           {
+    #             "data": {
+    #               "createMoment": {
+    #                 "moment": {
+    #                   "id": "TW9tZW50RGphbmdvVHlwZTo1",
+    #                   "cityName": "London",
+    #                   "title": "test title 5 from graphiql",
+    #                   "comment": "test comment 5 from graphiql",
+    #                   "weatherDescription": "scattered clouds"
+    #                 }
+    #               }
+    #             }
+    #           }
+    #       [Mutation(Update) example]
+    #           mutation {
+    #               updateMoment(id:4, input:{
+    #                 cityName: "Tokyo"
+    #                 title: "test title 4 from graphiql2"
+    #                 comment: "test comment 4 from graphiql"
+    #               }
+    #               ) {
+    #                     moment{
+    #                     id
+    #                     cityName
+    #                     title
+    #                     comment
+    #                     weatherDescription
+    #                   }
+    #               }
+    #           }
+    #       [Mutation(Update) Result example]
+    #           {
+    #             "data": {
+    #               "updateMoment": {
+    #                 "moment": {
+    #                   "id": "TW9tZW50RGphbmdvVHlwZTo0",
+    #                   "cityName": "Tokyo",
+    #                   "title": "test title 4 from graphiql2",
+    #                   "comment": "test comment 4 from graphiql",
+    #                   "weatherDescription": "broken clouds"
+    #                 }
     #               }
     #             }
     #           }
