@@ -467,7 +467,6 @@ pip install requests==2.31.0
 8. Run the following command:
 
 ```bash
-python manage.py makemigrations
 python manage.py migrate
 ```
 
