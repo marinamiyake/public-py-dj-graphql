@@ -41,10 +41,23 @@ class MomentTypeConnection(graphene.relay.Connection):
 
 
 class Query(graphene.ObjectType):
-    moments = graphene.relay.ConnectionField(MomentTypeConnection)
+    moments = graphene.relay.ConnectionField(
+        MomentTypeConnection,
+        moment_id=graphene.Int(),
+        title=graphene.String(),
+        city_name=graphene.String()
+    )
 
-    def resolve_moments(self, info, **kwargs):
+    def resolve_moments(self, info, moment_id=None, title=None, city_name=None, **kwargs):
         valid_records = models.Moment.objects.filter(del_flg=False)
+        if moment_id:
+            valid_records = valid_records.filter(id=moment_id)
+        else:
+            if title:
+                valid_records = valid_records.filter(title__icontains=title)
+            if city_name:
+                valid_records = valid_records.filter(city_name__icontains=city_name)
+
         results = []
         for i, record in enumerate(valid_records):
             results.append(
