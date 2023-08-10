@@ -138,7 +138,7 @@ class DeleteMoment(graphene.Mutation):
     def mutate(cls, root, info, moment_id):
         moment = models.Moment.objects.get(pk=moment_id)
         moment.del_flg = True
-        moment.deleted_at = datetime.datetime.now(datetime.timezone.utc).date()
+        moment.deleted_at = datetime.datetime.now(datetime.timezone.utc)
         moment.save()
         return DeleteMoment(moment_id=moment.id, moment=moment)
 
