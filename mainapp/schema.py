@@ -6,6 +6,12 @@ from graphene_django import DjangoObjectType
 from mainapp import models
 
 
+# ==================================================
+# Query (Read)
+# ==================================================
+# Note:
+# Use plain (customized) ObjectType to add row_num field for display.
+# If you don't need row_num, you can use DjangoObjectType like Mutation.
 class MomentType(graphene.ObjectType):
     row_num = graphene.Int()
 
@@ -29,20 +35,6 @@ class MomentType(graphene.ObjectType):
 class MomentTypeConnection(graphene.relay.Connection):
     class Meta:
         node = MomentType
-
-
-class MomentDjangoType(DjangoObjectType):
-    class Meta:
-        model = models.Moment
-        # Require django-filter to use filter function
-        # filter_fields = ['name', 'ingredients']
-        interfaces = (graphene.relay.Node,)
-        fields = "__all__"
-
-
-class MomentDjangoTypeConnection(graphene.relay.Connection):
-    class Meta:
-        node = MomentDjangoType
 
 
 class Query(graphene.ObjectType):
@@ -83,6 +75,24 @@ class Query(graphene.ObjectType):
                 )
             )
         return results
+
+
+# ==================================================
+# ==================================================
+# Mutation (Create, Update, Delete)
+# ==================================================
+class MomentDjangoType(DjangoObjectType):
+    class Meta:
+        model = models.Moment
+        # Require django-filter to use filter function
+        # filter_fields = ['name', 'ingredients']
+        interfaces = (graphene.relay.Node,)
+        fields = "__all__"
+
+
+class MomentDjangoTypeConnection(graphene.relay.Connection):
+    class Meta:
+        node = MomentDjangoType
 
 
 class MomentInput(graphene.InputObjectType):
@@ -145,3 +155,4 @@ def get_moment_from_weather_app_result(city_name):
 class Mutation(graphene.ObjectType):
     create_moment = CreateMoment.Field()
     update_moment = UpdateMoment.Field()
+# ==================================================
