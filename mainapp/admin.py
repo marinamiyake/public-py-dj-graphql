@@ -6,6 +6,7 @@ from mainapp import models
 class MomentModelAdmin(admin.ModelAdmin):
     disp_fields = [
         "id",
+        "del_flg",
         "title",
         "city_name",
         "weather_description",
@@ -15,6 +16,7 @@ class MomentModelAdmin(admin.ModelAdmin):
         "humidity",
         "comment",
         "created_at",
+        "deleted_at",
     ]
     save_on_top = True
     save_as = True
@@ -22,6 +24,9 @@ class MomentModelAdmin(admin.ModelAdmin):
     date_hierarchy = "created_at"
     search_fields = ('id', 'title')
     sortable_by = disp_fields
+    list_filter = (
+        'del_flg',
+    )
     readonly_fields = [
         'created_at',
     ]

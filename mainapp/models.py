@@ -11,6 +11,8 @@ class Moment(models.Model):
     humidity = models.FloatField()
     comment = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    del_flg = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "Moment ID: " + str(self.id)

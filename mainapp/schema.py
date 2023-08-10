@@ -1,3 +1,5 @@
+import datetime
+
 import graphene
 import requests
 from django.conf import settings
@@ -133,6 +135,21 @@ class UpdateMoment(graphene.Mutation):
         return UpdateMoment(moment=moment)
 
 
+class DeleteMoment(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+
+    moment = graphene.Field(MomentDjangoType)
+
+    @classmethod
+    def mutate(cls, root, info, id):
+        moment = models.Moment.objects.get(pk=id)
+        moment.del_flg = True
+        moment.deleted_at = datetime.datetime.now(datetime.timezone.utc).date()
+        moment.save()
+        return DeleteMoment(moment=moment)
+
+
 def get_moment_from_weather_app_result(city_name):
     url = "https://api.openweathermap.org/data/2.5/weather?q={city_name}&units=metric&appid={API_key}"
     weather_api_reponse = requests.get(url.format(city_name=city_name, API_key=settings.WEATHER_API_KEY))
@@ -155,4 +172,5 @@ def get_moment_from_weather_app_result(city_name):
 class Mutation(graphene.ObjectType):
     create_moment = CreateMoment.Field()
     update_moment = UpdateMoment.Field()
+    delete_moment = DeleteMoment.Field()
 # ==================================================
