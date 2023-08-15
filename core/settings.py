@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+import django_on_heroku
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,7 +32,8 @@ WEATHER_API_KEY = env('WEATHER_API_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Modified allowed hosts
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -129,6 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "static"
 
 # Modify static files directories
 STATICFILES_DIRS = [
@@ -137,6 +140,8 @@ STATICFILES_DIRS = [
     # Webapp assets
     os.path.join(BASE_DIR, STATIC_URL),
 ]
+
+django_on_heroku.settings(locals())
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
