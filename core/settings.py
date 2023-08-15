@@ -22,21 +22,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# The `DYNO` env var is set on Heroku CI, but it's not a real Heroku app, so we have to
+# also explicitly exclude CI:
+# https://devcenter.heroku.com/articles/heroku-ci#immutable-environment-variables
+IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
+
+# Production environ (Heroku Application)
 env = environ.Env()
-env.read_env(os.path.join(BASE_DIR, '.env'))
+if IS_HEROKU_APP:
+    # Modified debug flag
+    DEBUG = True
+    # Modified allowed hosts
+    ALLOWED_HOSTS = ['*']
+# Local environ
+else:
+    env.read_env(os.path.join(BASE_DIR, '.env'))
+    DEBUG = True
+    ALLOWED_HOSTS = []
+
 # Django secret key
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 WEATHER_API_KEY = env('WEATHER_API_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# Modified allowed hosts
-ALLOWED_HOSTS = ['*']
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -140,7 +149,6 @@ STATICFILES_DIRS = [
     # Webapp assets
     os.path.join(BASE_DIR, STATIC_URL),
 ]
-
 django_on_heroku.settings(locals())
 
 # Default primary key field type
